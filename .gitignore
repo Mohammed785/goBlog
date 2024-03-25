@@ -1,4 +1,5 @@
 .env
 *.rdb
-components/*/*.go
-components/*.go
+components/**/*.go
+node_modules
+assets/styles.css

@@ -54,7 +54,7 @@ func (ac *AuthController) Login(c fiber.Ctx) error {
 		sid := sess.ID()
 		sess.Set("sid", sid)
 		sess.Set("uid", user.Uid)
-		sess.Set("role", user.IsAdmin.Bool)
+		sess.Set("isAdmin", user.IsAdmin.Bool)
 		sess.Set("ip", c.Context().RemoteIP().String())
 		sess.Set("login", time.Unix(time.Now().Unix(), 0).UTC().String())
 		sess.Set("ua", string(c.Request().Header.UserAgent()))
