@@ -3,6 +3,7 @@ module github.com/Mohammed785/goBlog
 go 1.22.1
 
 require (
+	github.com/a-h/templ v0.2.648 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
@@ -10,8 +11,11 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.19.0 // indirect
-	github.com/gofiber/fiber/v3 v3.0.0-20240319073219-7fa8b2d4acf8 // indirect
+	github.com/gofiber/fiber/v3 v3.0.0-20240324195456-95c181469d87 // indirect
 	github.com/gofiber/storage/redis/v3 v3.1.1 // indirect
+	github.com/gofiber/template v1.8.3 // indirect
+	github.com/gofiber/template/html/v2 v2.1.1 // indirect
+	github.com/gofiber/utils v1.1.0 // indirect
 	github.com/gofiber/utils/v2 v2.0.0-beta.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

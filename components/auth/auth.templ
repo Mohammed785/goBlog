@@ -1,0 +1,26 @@
+package components
+
+
+import "github.com/Mohammed785/goBlog/components"
+
+
+templ AuthForm(page string,errors map[string]string){
+    <form hx-target="this" hx-swap="outerHTML" hx-post={ page }>
+    <input type="text" name="username"/>
+    if err:=errors["username"];err!=""{
+        <p style="color:red;"> { err } </p>
+    }
+    <input type="password" name="password"/>
+    if err:=errors["username"];err!=""{
+        <p style="color:red;"> { err } </p>
+    }
+        <button type="submit">Login</button>
+    </form>   
+
+}
+
+templ AuthPage(page string) {
+    @components.Page(page){
+        @AuthForm(page,nil)
+    }
+}
