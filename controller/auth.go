@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
@@ -28,13 +29,13 @@ func NewAuthController(queries *sqlc.Queries, storage *session.Store, validator 
 }
 
 func (ac *AuthController) Login(c fiber.Ctx) error {
-	var credentials userCredentials
+	var credentials sqlc.CreateUserParams
 	if err := c.Bind().Form(&credentials); err != nil {
 		helpers.SendMsg(c, helpers.ERROR_MSG, "please validate your request body")
 		return c.SendStatus(http.StatusInternalServerError)
 	}
 	if err := ac.validator.ValidateStruct(credentials); err != nil {
-		return helpers.Render(c, components.AuthForm("/login",ac.validator.ParseValidationError(err)))
+		return helpers.Render(c, components.AuthForm("/login", ac.validator.ParseValidationError(err)))
 	}
 	sess, err := ac.storage.Get(c)
 	if err != nil {
@@ -50,33 +51,32 @@ func (ac *AuthController) Login(c fiber.Ctx) error {
 		helpers.SendMsg(c, helpers.ERROR_MSG, "please check your password!!")
 		return c.SendStatus(http.StatusUnauthorized)
 	}
-	if sess.Fresh() {
-		sid := sess.ID()
-		sess.Set("sid", sid)
-		sess.Set("uid", user.Uid)
-		sess.Set("isAdmin", user.IsAdmin.Bool)
-		sess.Set("ip", c.Context().RemoteIP().String())
-		sess.Set("login", time.Unix(time.Now().Unix(), 0).UTC().String())
-		sess.Set("ua", string(c.Request().Header.UserAgent()))
+	sid := sess.ID()
+	sess.Set("sid", sid)
+	sess.Set("uid", user.Uid)
+	sess.Set("isAdmin", user.IsAdmin.Bool)
+	sess.Set("ip", c.Context().RemoteIP().String())
+	sess.Set("login", time.Unix(time.Now().Unix(), 0).UTC().String())
+	sess.Set("ua", string(c.Request().Header.UserAgent()))
 
-		err := sess.Save()
-		if err != nil {
-			helpers.SendMsg(c, helpers.ERROR_MSG, "couldn't save your session!! please try again.")
-			return c.SendStatus(http.StatusInternalServerError)
-		}
+	err = sess.Save()
+	if err != nil {
+		helpers.SendMsg(c, helpers.ERROR_MSG, "couldn't save your session!! please try again.")
+		return c.SendStatus(http.StatusInternalServerError)
 	}
-	c.Append("HX-Location","/protected")
+	log.Println("isAdmin: ", user.IsAdmin.Bool)
+	c.Append("HX-Location", "/")
 	return c.SendStatus(http.StatusOK)
 }
 
 func (ac *AuthController) Register(c fiber.Ctx) error {
-	var credentials userCredentials
-	if err := c.Bind().JSON(&credentials); err != nil {
+	var credentials sqlc.CreateUserParams
+	if err := c.Bind().Form(&credentials); err != nil {
 		helpers.SendMsg(c, helpers.ERROR_MSG, err.Error())
 		return c.SendStatus(http.StatusBadRequest)
 	}
 	if err := ac.validator.ValidateStruct(credentials); err != nil {
-		return helpers.Render(c, components.AuthForm("/register",ac.validator.ParseValidationError(err)))
+		return helpers.Render(c, components.AuthForm("/register", ac.validator.ParseValidationError(err)))
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(credentials.Password), 10)
 	if err != nil {
@@ -88,7 +88,8 @@ func (ac *AuthController) Register(c fiber.Ctx) error {
 		helpers.SendMsg(c, helpers.ERROR_MSG, err.Error())
 		return c.SendStatus(http.StatusBadRequest)
 	}
-	helpers.SendMsg(c,helpers.SUCCESS_MSG,"Account created successfully")
+	helpers.SendMsg(c, helpers.SUCCESS_MSG, "Account created successfully")
+	c.Append("HX-Location", "/login")
 	return c.SendStatus(http.StatusOK)
 }
 
@@ -103,6 +104,6 @@ func (ac *AuthController) Logout(c fiber.Ctx) error {
 		helpers.SendMsg(c, helpers.ERROR_MSG, "couldn't destroy session!! please try again.")
 		return c.SendStatus(http.StatusInternalServerError)
 	}
-	c.Append("HX-Location","/login")
+	c.Append("HX-Location", "/login")
 	return c.SendStatus(http.StatusNoContent)
 }

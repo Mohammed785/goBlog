@@ -56,16 +56,6 @@ func parseFieldError(err validator.FieldError) string {
 		return fmt.Sprintf("minimum (length/value) allowed is %s", err.Param())
 	case "max":
 		return fmt.Sprintf("maximum (length/value) allowed is %s", err.Param())
-	case "oneof":
-		return fmt.Sprintf("only allowed values are %s", err.Param())
-	case "email":
-		return "invalid email address"
-	case "datetime":
-		return "invalid date time"
-	case "unique":
-		return fmt.Sprintf("%s should contain only unique values", err.Field())
-	case "eqcsfield":
-		return fmt.Sprintf("%s must equal %s", err.Field(), err.Param())
 	default:
 		return err.Error()
 

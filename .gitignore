@@ -3,3 +3,4 @@
 components/**/*.go
 node_modules
 assets/styles.css
+database/sqlc/*
