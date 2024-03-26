@@ -8,3 +8,13 @@ sql:
         package: "sqlc"
         out: "database/sqlc"
         sql_package: "pgx/v5"
+        overrides: 
+          - column: tbl_user.username
+            go_struct_tag: validate:"required,min=8,max=30"
+          - column: tbl_user.password
+            go_struct_tag: validate:"required,min=8,max=30"
+          - column: tbl_post.title
+            go_struct_tag: validate:"required"
+          - column: tbl_post.content
+            go_struct_tag: validate:"required"
+
