@@ -1,0 +1,42 @@
+package components
+
+import "github.com/Mohammed785/goBlog/database/sqlc"
+import "fmt"
+import "github.com/Mohammed785/goBlog/components"
+
+
+
+templ PostsList(posts []sqlc.ListPostsRow,nextPage int){
+    for i,post := range posts{
+        <div>
+            <a  href={ templ.SafeURL(fmt.Sprintf("/post/%d",post.Pid)) } 
+            if i== len(posts) {
+                hx-swap="afterend" hx-trigger="revealed" hx-get={ fmt.Sprintf("/post?page=%d",nextPage) }
+            } 
+            >{ post.Title }</a>
+            
+            if ctx.Value("isAdmin")=="1" {
+                <button hx-delete={ fmt.Sprintf("/post?page=%d",post.Pid) } hx-trigger="click" type="button" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                    </svg>
+                <span class="sr-only">Delete post</span>
+                </button>
+                <a href={ templ.SafeURL(fmt.Sprintf("/post/%d",post.Pid)) } class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center me-2">
+                Update
+                </a>
+            }
+        
+        </div>
+    }    
+}
+
+templ PostsListPage(posts []sqlc.ListPostsRow,nextPage int){
+    @components.Page("list"){
+
+    <ul hx-swap="outerHTML" hx-trigger="revealed">
+        @PostsList(posts,nextPage)
+    </ul>
+
+    }
+}

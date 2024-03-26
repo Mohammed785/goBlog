@@ -1,0 +1,44 @@
+package components
+
+import "github.com/Mohammed785/goBlog/database/sqlc"
+import "fmt"
+import "github.com/Mohammed785/goBlog/components"
+
+
+templ PostForm(postData *sqlc.FindPostByIdRow,errors map[string]string){
+    <form class="space-y-4 md:space-y-6" hx-target="this" method="post" hx-swap="outerHTML" 
+    if postData==nil {
+        hx-post="/post/create"
+    } else {
+        hx-patch={ fmt.Sprintf("/post/%d",postData.Pid) }
+    } >
+        <div>
+            <label for="title" class="block mb-2 text-md font-medium text-900">Title</label>
+            <input if postData!=nil { value={ postData.Title } } type="text" name="Title" id="Title" class="bg-primary-50 text-md border border-primary-300 text-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" required/>
+            if err:=errors["Title"];err!=""{
+                <p class="text-red-600 text-md mt-1"> { err } </p>
+            }
+        </div>
+        <div>
+            <label for="Content" class="block mb-2 text-sm font-medium text-gray-900">Conetnt</label>
+            <textarea id="Content" name="Content" rows="4" required class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Write content here...">
+                if postData!=nil { 
+                    { postData.Content }
+                }
+            </textarea>
+            if err:=errors["Content"];err!=""{
+                <p class="text-red-600 text-md mt-1"> { err } </p>
+            }
+        </div>
+        <button type="submit" 
+        class="w-full bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-bold text-lg rounded-lg px-5 py-2.5 text-center">
+        Submit
+        </button>
+    </form>
+}
+
+templ PostFormPage(postData *sqlc.FindPostByIdRow){
+    @components.Page("post"){
+        @PostForm(postData,nil)
+    }
+}

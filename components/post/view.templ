@@ -1,0 +1,16 @@
+package components
+
+import "github.com/Mohammed785/goBlog/database/sqlc"
+import "github.com/Mohammed785/goBlog/components"
+
+
+templ PostViewPage(view bool,post *sqlc.FindPostByIdRow){
+    @components.Page("post"){
+        if view {
+            <h1>{ post.Title }</h1>
+            <p>{ post.Content }</p>
+        } else {
+            @PostForm(post,nil)
+        }
+    }
+}
